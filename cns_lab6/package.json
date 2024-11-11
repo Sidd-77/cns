@@ -1,0 +1,14 @@
+{
+  "name": "cns_lab6",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sidd-77",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}

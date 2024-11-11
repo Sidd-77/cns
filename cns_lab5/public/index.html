@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DES Encryption/Decryption Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #4A90E2;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        input[type="button"] {
+            width: 45%;
+            padding: 10px;
+            margin: 5px;
+            background-color: #4A90E2;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="button"]:hover {
+            background-color: #357ABD;
+        }
+
+        h3 {
+            font-size: 18px;
+            color: #4A90E2;
+            margin-top: 15px;
+        }
+
+        p {
+            font-size: 16px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            min-height: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DES Encryption/Decryption</h1>
+        <form id="encryption-form">
+            <label for="message">Message:</label>
+            <input type="text" id="message" name="message" placeholder="Enter message...">
+
+            <label for="key">Key:</label>
+            <input type="text" id="key" name="key" placeholder="Enter key...">
+
+            <input type="button" value="Encrypt" onclick="encryptMessage()">
+            <input type="button" value="Decrypt" onclick="decryptMessage()">
+        </form>
+
+        <h3>Encrypted/Decrypted Message:</h3>
+        <p id="result-message">Your result will appear here</p>
+    </div>
+
+    <script>
+        // Encrypt the message using DES
+        function encryptMessage() {
+            const message = document.getElementById('message').value;
+            const key = document.getElementById('key').value;
+
+            // Encrypt using DES (CryptoJS)
+            const encrypted = CryptoJS.DES.encrypt(message, key).toString();
+
+            // Display encrypted message
+            document.getElementById('result-message').innerText = encrypted;
+
+            // Send encrypted message to backend
+            fetch('/encrypt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message, key })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Encrypted message sent to server: ${data.encryptedMessage}`);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Decrypt the message using DES
+        function decryptMessage() {
+            const encryptedMessage = document.getElementById('message').value;
+            const key = document.getElementById('key').value;
+
+            // Decrypt using DES (CryptoJS)
+            const decryptedBytes = CryptoJS.DES.decrypt(encryptedMessage, key);
+            const decryptedText = decryptedBytes.toString(CryptoJS.enc.Utf8);
+
+            // Display decrypted message
+            document.getElementById('result-message').innerText = decryptedText;
+
+            // Send decrypted message to backend
+            fetch('/decrypt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ encryptedMessage, key })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Decrypted message from server: ${data.decryptedMessage}`);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
